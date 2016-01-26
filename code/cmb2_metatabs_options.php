@@ -1,8 +1,4 @@
 <?php
-/*
- * Credit to
- */
-
 class Cmb2_Metatabs_Options {
 
 	/**
@@ -22,7 +18,7 @@ class Cmb2_Metatabs_Options {
 	protected static $options_page = '';
 
 	/**
-	 * $props: Properties which can be injected via constructor (or set here, if desired).
+	 * $props: Properties which can be injected via constructor
 	 *
 	 * @var array
 	 * @since  1.0.0
@@ -76,7 +72,7 @@ class Cmb2_Metatabs_Options {
 	 */
 	private function validate_props() {
 
-		// if key, title, or the CMB2 class do not exist, throw exception
+		// if key or title do not exist, throw exception
 		if ( ! self::$props['key'] || ! self::$props['title']  )
 			throw new Exception( 'CMB2_Multi_Opts: Settings key or page title missing.' );
 
@@ -170,7 +166,7 @@ class Cmb2_Metatabs_Options {
 
 			// if menu arguments are less than 7, add empty argument to end, assumes subpage wanted
 			if ( $count < 7 && self::$props['topmenu'] )
-				self::$props['menuargs'][] = '';
+				self::$props['menuargs'][] = null;
 
 			return self::$props['menuargs'];
 		}
