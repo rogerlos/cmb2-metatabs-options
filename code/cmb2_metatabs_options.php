@@ -176,15 +176,15 @@ class Cmb2_Metatabs_Options {
 		if ( self::$props['topmenu'] ) {
 			// adds a post_type get var, to allow post options pages
 			$add = self::$props['postslug'] ? '?post_type=' . self::$props['postslug'] : '';
-			$args[] = self::$props['topmenu'] . $add;		// parent
+			$args[] = self::$props['topmenu'] . $add;
 		}
-		$args[] = $args[] = self::$props['title'];			// title (2x)
-		$args[] = 'manage_options';							// capabilities
-		$args[] = self::$props['key'];						// slug
-		$args[] = array( $this, 'admin_page_display' );		// callback
+		$args[] = $args[] = self::$props['title'];
+		$args[] = 'manage_options';
+		$args[] = self::$props['key'];
+		$args[] = array( $this, 'admin_page_display' );
 		if ( ! self::$props['topmenu'] )
-			$args[] = ''; 									// icon
-		$args[] = null;										// position
+			$args[] = '';
+		$args[] = null;
 
 		return $args;
 	}
@@ -406,7 +406,7 @@ class Cmb2_Metatabs_Options {
 		echo apply_filters( 'cmb2metatabs_before_form', '' );
 
 		// form wraps all tabs
-		echo '<form class="cmb-form" method="post" id="mathtools-options-form" '
+		echo '<form class="cmb-form" method="post" id="cmo-options-form" '
 			 . 'enctype="multipart/form-data" encoding="multipart/form-data">';
 
 		// hidden object_id field
@@ -456,7 +456,7 @@ class Cmb2_Metatabs_Options {
 
 		echo '</form>';  // close form
 
-		// allows filter to inject HTML before the form
+		// allows filter to inject HTML after the form
 		echo apply_filters( 'cmb2metatabs_after_form', '' );
 
 		echo '</div>';  // close wrapper
@@ -467,7 +467,7 @@ class Cmb2_Metatabs_Options {
 
 	/**
 	 * RENDER SAVE BUTTON
-	 * If this was called in the context of a CMB2 field, use the "name" for the save text.
+	 * If this was called in the context of a CMB2 field, use the "desc" for the save text.
 	 *
 	 * @param string|\CMB2_Field $field
 	 * @since 0.1.0
