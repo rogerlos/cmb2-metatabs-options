@@ -29,5 +29,16 @@ starting point for this plugin.
 
 == Changelog ==
 
+= 1.0.1 =
+code\cmb2_metatabs_options.php revisions:
+* settings_notices() : updated text domain
+* should_save() : added method
+* metabox_callback() : refactored save
+* add_scripts() : always added postbox toggle to footer
+* build_menu_args() : removed 'menuargs' validatation
+* validate_props() : added 'menuargs' validation
+code\cmb2multiopts.js revisions:
+* removed postboxes toggle
+
 = 1.0.0 =
 * Initial release.

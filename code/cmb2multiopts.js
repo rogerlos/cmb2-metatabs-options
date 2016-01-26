@@ -1,3 +1,8 @@
+/**
+ * @since 1.0.1 Removed postboxes toggle
+ * @since 1.0.0
+ */
+
 jQuery.noConflict();
 jQuery(document).ready(function($){
 
@@ -26,26 +31,22 @@ jQuery(document).ready(function($){
     // move metaboxes to correct tabs
     moveMetaboxes();
 
-    // add metabox functionality
-    postboxes
-        .add_postbox_toggles( cls.toggle );
-
     // when page loads, make tab active
     tabSwitch();
 
     // show and hide tab content on tab clicks
-    $( '.' + cls.tab )
-        .on( 'click', function(e) {
-            e.preventDefault();
-            tabSwitch( $(this) );
-        });
+    $( '.' + cls.tab ).on( 'click', function(e) {
+        e.preventDefault();
+        tabSwitch( $(this) );
+    });
 
     /**
      * TAB SWITCH
      * Changes the tab content when tab is clicked.
      *
-     * @since 1.0
      * @param $tab
+     *
+     * @since 1.0.0
      */
     function tabSwitch( $tab ) {
 
@@ -58,23 +59,16 @@ jQuery(document).ready(function($){
         }
 
         // get id and content location from the chosen tab
-        id = $tab
-            .attr('id');
-        content = $tab
-            .data('optcontent');
+        id = $tab.attr('id');
+        content = $tab.data('optcontent');
 
         // hide all tabs and show current tab
-        $( '.' + cls.toggle )
-            .hide();
-        $( content )
-            .show();
+        $( '.' + cls.toggle ).hide();
+        $( content ).show();
 
         // remove and set the Wordpress active tab class on the tab navigation
-        $( '.' + cls.tab )
-            .removeClass( cls.wpactive );
-        $( '#' + id )
-            .addClass( cls.wpactive )
-            .blur();
+        $( '.' + cls.tab ).removeClass( cls.wpactive );
+        $( '#' + id ).addClass( cls.wpactive ).blur();
 
         // set the current active tab
         activetab = id;
@@ -94,14 +88,7 @@ jQuery(document).ready(function($){
                 + 'page=' + page
                 + '&tab=' + id;
 
-            history
-                .pushState(
-                    stateObject,
-                    $(document)
-                        .find('title')
-                        .text(),
-                    url
-                );
+            history.pushState( stateObject, $(document).find('title').text(), url );
         }
     }
 
@@ -110,23 +97,18 @@ jQuery(document).ready(function($){
      * Moves metaboxes to their proper tabs. Each tab container has a data attribute "boxes" with a comma-delimited
      * string containing the metaboxes which belong within.
      *
-     * @since 0.1.0
+     * @since 1.0.0
      */
     function moveMetaboxes() {
-        $containers
-            .each( function() {
-                var $this = $(this),
-                    $sortable = $this.find('.meta-box-sortables'),
-                    boxes;
-                boxes = $this
-                    .data( 'boxes' )
-                    .split( ',' );
-                $.each( boxes, function(i,v) {
-                    $( '#' + v )
-                        .appendTo( $sortable )
-                        .removeClass( 'hide-if-js ' + cls.hidden );
-                });
+        $containers.each( function() {
+            var $this = $(this),
+                $sortable = $this.find('.meta-box-sortables'),
+                boxes;
+            boxes = $this.data( 'boxes' ).split( ',' );
+            $.each( boxes, function(i,v) {
+                $( '#' + v ).appendTo( $sortable ).removeClass( 'hide-if-js ' + cls.hidden );
             });
+        });
     }
 
     /**
@@ -135,17 +117,14 @@ jQuery(document).ready(function($){
      *
      * @param name
      * @returns {string}
-     * @since 0.1.0
+     *
+     * @since 1.0.0
      */
     function getQ( name ) {
-        var regex,
-            results;
-        name = name
-            .replace(/[\[]/,"\\[")
-            .replace(/[\]]/,"\\]");
+        var regex, results;
+        name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
         regex = new RegExp( "[\\?&]" + name + "=([^&#]*)" );
-        results = regex
-            .exec( location.search );
+        results = regex.exec( location.search );
         return results === null ?
             "" : decodeURIComponent( results[1].replace( /\+/g," ") );
     }

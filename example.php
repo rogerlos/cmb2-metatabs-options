@@ -4,13 +4,15 @@
  * -----------------------------------
  * This file creates an options page located in under the WordPress "Settings" menu.
  *
- * If you try and run this file directly, you will see the page listed under settings, but if you try to go there, you
- * will be told you lack permissions, as this file won't have run, and hence the options page won't exist!
+ * Do not run this file directly; instead uncomment
+ *   include(example.php);
+ * in the main plugin file to see the results of the code in this file.
  *
- * Instead, uncomment 'include(example.php);' in the main plugin file to see CMO in action.
- *
- * Much more information is available at this CMB2 Metatabs Option's wiki:
+ * More information is available at this CMB2 Metatabs Option's wiki:
  * https://github.com/rogerlos/cmb2-metatabs-options/wiki
+ *
+ * @since 1.0.1 Revised comments
+ * @since 1.0.0
  */
 
 
@@ -21,8 +23,8 @@ add_action( 'cmb2_admin_init', 'cmb2_metatabs_options_go' );
 /**
  * Callback for 'cmb2_admin_init'.
  *
- * 'boxes' and 'tabs' call functions simply to separate "normal" CMB2 configuration
- * from configuration CMO requires. You could add them inline or see the wiki for more options.
+ * In this example, 'boxes' and 'tabs' call functions simply to separate "normal" CMB2 configuration
+ * from unique CMO configuration.
  */
 function cmb2_metatabs_options_go() {
 
@@ -47,8 +49,9 @@ function cmb2_metatabs_options_go() {
 
 
 /**
- * Callback for CMO filter. The two filters in this plugin simply echo the return from this callback, so no
- * need to manipulate the empty string they send to the filter callback.
+ * Callback for CMO filter.
+ *
+ * The two filters in CMO do not send any content; simply return your HTML.
  *
  * @return string
  */
@@ -59,15 +62,14 @@ function cmb2_metatabs_options_add_intro_via_filter() {
 
 
 /**
- * We're going to add five boxes and some random fields. Two boxes will go into each tab, and the fifth will
- * go into the sidebar.
+ * Add some boxes the normal CMB2 way. (Five boxes and their fields, in this example.)
  *
- * This is a typical CMB2 configuration of metaboxes and their fields, but note the two crucial extra items:
+ * This is typical CMB2, but note two crucial extra items:
  *
- * - ['show_on'] property is configured
- * - call to object_type method
+ * - the ['show_on'] property is configured
+ * - a call to object_type method
  *
- * Explanation of what their values are and why they're important is on the wiki.
+ * See the wiki for more detail on why these are important and what their values are.
  *
  * @param string $options_key
  * @return array
@@ -188,11 +190,11 @@ function cmb2_metatabs_options_add_boxes( $options_key ) {
 
 
 /**
- * Configure a couple of tabs to hold the boxes. Tabs are completely optional and removing them would
- * have the configured metaboxes display on the options page sequentially.
+ * Add some tabs (in this case, two).
  *
- * Note that the box in the sidebar doesn't need to be in a tab. But using tabs will hide all boxes
- * not explicitly assigned to a tab.
+ * Tabs are completely optional and removing them would result in the option metaboxes displaying sequentially.
+ *
+ * If you do configure tabs, all boxes whose context is "normal" or "advanced" must be in a tab to display.
  *
  * @return array
  */

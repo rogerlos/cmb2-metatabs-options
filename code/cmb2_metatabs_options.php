@@ -5,6 +5,7 @@ class Cmb2_Metatabs_Options {
 	 * Whether settings notices have already been set
 	 *
 	 * @var bool
+	 *
 	 * @since  1.0.0
 	 */
 	protected static $once = false;
@@ -13,6 +14,7 @@ class Cmb2_Metatabs_Options {
 	 * Options page hook, equivalent to get_current_screen()['id']
 	 *
 	 * @var string
+	 *
 	 * @since  1.0.0
 	 */
 	protected static $options_page = '';
@@ -21,6 +23,7 @@ class Cmb2_Metatabs_Options {
 	 * $props: Properties which can be injected via constructor
 	 *
 	 * @var array
+	 *
 	 * @since  1.0.0
 	 */
 	private static $props = array(
@@ -41,14 +44,15 @@ class Cmb2_Metatabs_Options {
 	 * Inject anything within the self::$props array by matching the argument keys.
 	 *
 	 * @param array $args    Array of arguments
-	 * @since  1.0.0
 	 * @throws \Exception
+	 *
+	 * @since  1.0.0
 	 */
 	public function __construct( $args ) {
 
 		// require CMB2
 		if ( ! class_exists( 'CMB2' ) )
-			throw new Exception( 'CMB2_Multi_Opts: CMB2 is required to use this class.' );
+			throw new Exception( 'CMB2_Metatabs_Options: CMB2 is required to use this class.' );
 
 		// parse any injected arguments and add to self::$props
 		self::$props = wp_parse_args( $args, self::$props );
@@ -67,14 +71,24 @@ class Cmb2_Metatabs_Options {
 	 * VALIDATE PROPS
 	 * Checks the values of critical passed properties
 	 *
-	 * @since 0.1.0
 	 * @throws \Exception
+	 *
+	 * @since 1.0.1 Moved menuargs validation to within this method
+	 * @since 1.0.0
 	 */
 	private function validate_props() {
 
 		// if key or title do not exist, throw exception
 		if ( ! self::$props['key'] || ! self::$props['title']  )
-			throw new Exception( 'CMB2_Multi_Opts: Settings key or page title missing.' );
+			throw new Exception( 'CMB2_Metatabs_Options: Settings key or page title missing.' );
+
+		// check menu argument count
+		if ( ! empty( self::$props['menuargs'] ) ) {
+			$count = count( self::$props['menuargs'] );
+			// if the menu arguments number less than 6, throw exception
+			if ( $count < 6 || $count > 7 )
+				throw new Exception( 'CMB2 Multibox Options: Wrong number of menu arguments.' );
+		}
 
 		// set JS url
 		if ( ! self::$props['jsuri'] )
@@ -89,6 +103,8 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * ADD WP ACTIONS
 	 * Note, some additional actions are added elsewhere as they cannot be added this early.
+	 *
+	 * @since  1.0.0
 	 */
 	private function add_wp_actions() {
 		// Register setting
@@ -119,7 +135,7 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * ADD OPTIONS PAGE
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function add_options_page() {
 
@@ -150,31 +166,25 @@ class Cmb2_Metatabs_Options {
 	 * to create a page without a menu entry, but you will need to link to it somewhere.
 	 *
 	 * @return array
-	 * @since 0.1.0
 	 * @throws \Exception
+	 *
+	 * @since 1.0.1 Removed menuargs validation to validate_props() method
+	 * @since 1.0.0
 	 */
 	private function build_menu_args() {
 
 		// if a menu arguments array was injected, return it
 		if ( ! empty( self::$props['menuargs'] ) ) {
-
-			$count = count( self::$props['menuargs'] );
-
-			// if the menu arguments number less than 6, throw exception
-			if ( $count < 6 || $count > 7 )
-				throw new Exception( 'CMB2 Multibox Options: Wrong number of menu arguments.' );
-
 			// if menu arguments are less than 7, add empty argument to end, assumes subpage wanted
-			if ( $count < 7 && self::$props['topmenu'] )
+			if ( count( self::$props['menuargs'] ) < 7 && self::$props['topmenu'] )
 				self::$props['menuargs'][] = null;
-
 			return self::$props['menuargs'];
 		}
 
 		// otherwise build the menu page from the page title and options-slug
 		$args = array();
 		if ( self::$props['topmenu'] ) {
-			// adds a post_type get var, to allow post options pages
+			// add a post_type get var, to allow post options pages
 			$add = self::$props['postslug'] ? '?post_type=' . self::$props['postslug'] : '';
 			$args[] = self::$props['topmenu'] . $add;
 		}
@@ -195,17 +205,18 @@ class Cmb2_Metatabs_Options {
 	 * If you role your own script, note the localized values being passed here.
 	 *
 	 * @param string $hook_suffix
-	 * @since 0.1.0
 	 * @throws \Exception
+	 *
+	 * @since 1.0.1 Always add postbox toggle, removed toggle from tab handler JS
+	 * @since 1.0.0
 	 */
 	public function add_scripts( $hook_suffix ) {
 
 		// 'postboxes' needed for metaboxes to work properly
 		wp_enqueue_script( 'postbox' );
 
-		// If this is our options page but there are no tabs, we need to toggle the metaboxes
-		if ( $hook_suffix == self::$options_page && empty( self::$props['tabs'] ) )
-			add_action( 'admin_print_footer_scripts', array( $this, 'toggle_postboxes' ) );
+		// toggle the postboxes
+		add_action( 'admin_print_footer_scripts', array( $this, 'toggle_postboxes' ) );
 
 		// only add the main script to the options page if there are tabs present
 		if ( $hook_suffix !== self::$options_page || empty( self::$props['tabs'] ) )
@@ -213,12 +224,12 @@ class Cmb2_Metatabs_Options {
 
 		// if self::$props['jsuri'] is empty, throw exception
 		if ( ! self::$props['jsuri'] )
-			throw new Exception( 'CMB2 Multibox Options: Tabs included but JS file not specified.' );
+			throw new Exception( 'CMB2_Metatabs_Options: Tabs included but JS file not specified.' );
 
 		// check to see if file exists, throws exception if it does not
 		$headers = @get_headers( self::$props['jsuri'] );
 		if ( $headers[0] == 'HTTP/1.1 404 Not Found' )
-			throw new Exception( 'CMB2 Multibox Options: Passed Javascript file missing.' );
+			throw new Exception( 'CMB2_Metatabs_Options: Passed Javascript file missing.' );
 
 		// enqueue the script
 		wp_enqueue_script(  self::$props['key'] . '-admin', self::$props['jsuri'], array( 'postbox' ), false, true );
@@ -234,6 +245,8 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * TOGGLE POSTBOXES
 	 * Ensures boxes are toggleable on non tabs pages
+	 *
+	 * @since 1.0.0
 	 */
 	public function toggle_postboxes() {
 		echo '<script>jQuery(document).ready(function(){postboxes.add_postbox_toggles("postbox-container");});</script>';
@@ -242,6 +255,8 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * ADD CSS
 	 * Adds a couple of rules to clean up WP styles if tabs are included
+	 *
+	 * @since 1.0.0
 	 */
 	public function add_css() {
 
@@ -308,6 +323,7 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @param CMB2 $box
 	 * @return bool
+	 *
 	 * @since  1.0.0
 	 */
 	private function should_show( $box ) {
@@ -331,8 +347,9 @@ class Cmb2_Metatabs_Options {
 	 * The "hidden" class hides metaboxes until they have been moved to appropriate tab, if tabs are used.
 	 *
 	 * @param array $classes
-	 * @since 0.1.0
 	 * @return array
+	 *
+	 * @since 1.0.0
 	 */
 	public function hide_metabox_class( $classes ) {
 		$classes[] = 'opt-hidden';
@@ -344,8 +361,9 @@ class Cmb2_Metatabs_Options {
 	 * Adds class to closed-by-default metaboxes
 	 *
 	 * @param array $classes
-	 * @since 0.1.0
 	 * @return array
+	 *
+	 * @since 1.0.0
 	 */
 	public function close_metabox_class( $classes ) {
 		$classes[] = 'closed';
@@ -356,7 +374,7 @@ class Cmb2_Metatabs_Options {
 	 * DO METABOXES
 	 * Triggers the loading of our metaboxes on this screen.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	public function do_metaboxes() {
 		do_action( 'add_meta_boxes_' . self::$options_page, null );
@@ -367,7 +385,8 @@ class Cmb2_Metatabs_Options {
 	 * METABOX CALLBACK
 	 * Builds the fields and saves them.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.1 Refactored the save tests to method should_save()
+	 * @since 1.0.0
 	 */
 	public static function metabox_callback() {
 
@@ -376,16 +395,38 @@ class Cmb2_Metatabs_Options {
 		$cmb = cmb2_get_metabox( $args[1]['id'], self::$props['key'] );
 
 		// save fields
-		if ( $cmb->prop( 'save_fields' )
-			 && isset( $_POST['submit-cmb'], $_POST['object_id'], $_POST[ $cmb->nonce() ] )
-			 && wp_verify_nonce( $_POST[ $cmb->nonce() ], $cmb->nonce() )
-			 && self::$props['key'] && $_POST['object_id'] == self::$props['key']
-		) {
+		if ( self::should_save( $cmb ) ) {
 			$cmb->save_fields( self::$props['key'], $cmb->mb_object_type(), $_POST );
 		}
 
 		// show the fields
 		$cmb->show_form();
+	}
+
+	/**
+	 * SHOULD SAVE
+	 * Determine whether the CMB2 object should be saved. All tests must be true, hence return false for
+	 * any failure.
+	 *
+	 * @param \CMB2 $cmb
+	 * @return bool
+	 *
+	 * @since 1.0.1
+	 */
+	private function should_save( $cmb ) {
+		// was this flagged to save fields?
+		if ( ! $cmb->prop( 'save_fields' ) )
+			return false;
+		// are these values set?
+		if ( ! isset( $_POST['submit-cmb'], $_POST['object_id'], $_POST[ $cmb->nonce() ] ) )
+			return false;
+		// does the nonce match?
+		if ( ! wp_verify_nonce( $_POST[ $cmb->nonce() ], $cmb->nonce() ) )
+			return false;
+		// does the object_id equal the settings key?
+		if ( ! $_POST['object_id'] == self::$props['key'] )
+			return false;
+		return true;
 	}
 
 	/**
@@ -432,7 +473,9 @@ class Cmb2_Metatabs_Options {
 		}
 
 		// open postbox container
-		echo '<div id="postbox-container-' . ( self::$props['cols'] == 2 ? '2' : '1' ) . '" class="postbox-container">';
+		echo '<div id="postbox-container-';
+		echo self::$props['cols'] == 2 ? '2' : '1';
+		echo '" class="postbox-container">';
 
 		// add tabs; the sortables container is within each tab
 		echo $this->render_tabs();
@@ -470,7 +513,8 @@ class Cmb2_Metatabs_Options {
 	 * If this was called in the context of a CMB2 field, use the "desc" for the save text.
 	 *
 	 * @param string|\CMB2_Field $field
-	 * @since 0.1.0
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_save_button( $field = '' ) {
 		$text = is_string( $field ) ? $field : $field->args['desc'];
@@ -484,7 +528,9 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @param string $object_id
 	 * @param array  $updated
-	 * @since  1.0.0
+	 *
+	 * @since 1.0.1 updated text domain
+	 * @since 1.0.0
 	 */
 	public function settings_notices( $object_id, $updated ) {
 
@@ -493,7 +539,7 @@ class Cmb2_Metatabs_Options {
 			return;
 
 		// add notifications
-		add_settings_error( self::$props['key'] . '-notices', '', __( 'Settings updated.', 'mathtools' ), 'updated' );
+		add_settings_error( self::$props['key'] . '-notices', '', __( 'Settings updated.', 'cmb2' ), 'updated' );
 		settings_errors( self::$props['key'] . '-notices' );
 
 		// set the flag so we don't pile up notices
@@ -504,7 +550,7 @@ class Cmb2_Metatabs_Options {
 	 * RENDER TABS
 	 * Echoes tabs if they've been configured. The containers will have their metaboxes moved into them by javascript.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
 	private function render_tabs() {
 
@@ -517,8 +563,8 @@ class Cmb2_Metatabs_Options {
 		foreach( self::$props['tabs'] as $tab ) {
 
 			// add tabs navigation
-			$tabs .= '<a href="#" id="opt-tab-' . $tab['id'] . '" class="nav-tab opt-tab" '
-					 . 'data-optcontent="#opt-content-' . $tab['id'] . '">';
+			$tabs .= '<a href="#" id="opt-tab-' . $tab['id'] . '" class="nav-tab opt-tab" ';
+			$tabs .= 'data-optcontent="#opt-content-' . $tab['id'] . '">';
 			$tabs .= $tab['title'];
 			$tabs .= '</a>';
 
@@ -526,8 +572,8 @@ class Cmb2_Metatabs_Options {
 			$contents = implode( ',', $tab['boxes'] );
 
 			// tab container markup
-			$containers .= '<div class="opt-content" id="opt-content-' . $tab['id'] . '" '
-						   . ' data-boxes="' . $contents . '">';
+			$containers .= '<div class="opt-content" id="opt-content-' . $tab['id'] . '" ';
+			$containers .= ' data-boxes="' . $contents . '">';
 			$containers .= $tab['desc'];
 			$containers .= '<div class="meta-box-sortables ui-sortable">';
 			$containers .= '</div>';
@@ -539,6 +585,7 @@ class Cmb2_Metatabs_Options {
 		$return .= $tabs;
 		$return .= '</h2>';
 		$return .= $containers;
+
 		return $return;
 	}
 
@@ -551,15 +598,12 @@ class Cmb2_Metatabs_Options {
 	 * 3) If array is still empty, call CMB2_Boxes::get_all();
 	 *
 	 * @return array|\CMB2[]
-	 * @since 0.1.0
+	 *
+	 * @since 1.0.0
 	 */
 	private function cmb2_metaboxes() {
-
 		// add any injected metaboxes
 		$boxes = self::$props['boxes'];
-
-		// you can add boxes here, though it makes this class pretty inflexible. Inject them instead.
-
 		// if $boxes is still empty, see if they've been configured elsewhere in the program
 		return empty( $boxes ) ? CMB2_Boxes::get_all() : $boxes;
 	}
@@ -570,15 +614,12 @@ class Cmb2_Metatabs_Options {
 	 * or add them here, or leave empty for no tabs.
 	 *
 	 * @return array
-	 * @since 0.1.0
+	 *
+	 * @since 1.0.0
 	 */
 	private function add_tabs() {
-
 		// add any injected tabs
 		$tabs = self::$props['tabs'];
-
-		// you could add your tabs directly here, but it makes the class inflexible. Inject them instead.
-
 		return $tabs;
 	}
 }
