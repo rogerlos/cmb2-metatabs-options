@@ -2,6 +2,8 @@ jQuery.noConflict();
 jQuery(document).ready(function($){
 
     /**
+     * Localized var from WP.
+     *
      * @name cmb2OptTabs
      * @property {string} key
      * @property {string} posttype
@@ -54,8 +56,6 @@ jQuery(document).ready(function($){
             tab = getQ('tab').length ? getQ('tab') : cls.defaulttab;
             $tab = $( '#' + tab );
         }
-
-        console.log($tab);
 
         // get id and content location from the chosen tab
         id = $tab
