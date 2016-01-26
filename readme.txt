@@ -43,7 +43,7 @@ See the [wiki](https://github.com/rogerlos/cmb2-metatabs-options/wiki/Troublesho
 
 == Screenshots ==
 
-None.
+Nothing to see.
 
 == Upgrade Notice ==
 
