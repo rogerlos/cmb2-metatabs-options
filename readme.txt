@@ -24,7 +24,7 @@ must already utilize the [CMB2](https://github.com/WebDevStudios/CMB2) library. 
 Please see the wiki at CMO's github repository for a
 [detailed user's guide](https://github.com/rogerlos/cmb2-metatabs-options/wiki).
 
-Thanks to the folks maintaining CMB2 for their continued development of that library, and providing the
+Thanks to the folks maintaining CMB2 for their continued development, and providing the
 starting point for this plugin.
 
 == Installation ==
