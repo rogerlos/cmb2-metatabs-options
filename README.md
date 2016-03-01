@@ -1,12 +1,21 @@
 # CMB2 Metatabs Options
+
 Contributors: rogerlos
+
 Donate link: http://rogerlos.com
+
 Tags: cmb2, metaboxes, forms, fields, options, settings, tabs, cmo
+
 Requires at least: 3.8.0
+
 Tested up to: 4.4.1
+
 Stable tag: 1.0.1
+
 License: GPLv2 or later
+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
 
 Extends CMB2--create WordPress options pages with multiple metaboxes,
 support for tabs, and flexible menu locations.
