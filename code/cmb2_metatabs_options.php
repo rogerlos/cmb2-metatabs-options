@@ -37,6 +37,9 @@ class Cmb2_Metatabs_Options {
 		'tabs'       => array(),
 		'cols'		 => 1,
 		'savetxt'    => 'Save',
+		'capability' => 'manage_options',
+		'icon_url'   => '',
+		'position'   => null,
 	);
 
 	/**
@@ -189,12 +192,12 @@ class Cmb2_Metatabs_Options {
 			$args[] = self::$props['topmenu'] . $add;
 		}
 		$args[] = $args[] = self::$props['title'];
-		$args[] = 'manage_options';
+		$args[] = self::$props['capability'];
 		$args[] = self::$props['key'];
 		$args[] = array( $this, 'admin_page_display' );
 		if ( ! self::$props['topmenu'] )
-			$args[] = '';
-		$args[] = null;
+			$args[] = self::$props['icon_url'];
+		$args[] = self::$props['position'];
 
 		return $args;
 	}
