@@ -41,6 +41,9 @@ function cmb2_metatabs_options_go() {
 		'cols'    => 2,
 		'boxes'	  => cmb2_metatabs_options_add_boxes( $options_key ),
 		'tabs'	  => cmb2_metatabs_options_add_tabs(),
+		'menuargs' => array(
+			'menu_title' => 'CMO Sample',
+		)
 	);
 
 	// create the options page

@@ -1,4 +1,8 @@
 <?php
+/*
+ * See https://github.com/rogerlos/cmb2-metatabs-options
+ * Version 1.0.2
+ */
 class Cmb2_Metatabs_Options {
 
 	/**
@@ -21,22 +25,31 @@ class Cmb2_Metatabs_Options {
 
 	/**
 	 * $props: Properties which can be injected via constructor
+	 * Note that
 	 *
 	 * @var array
 	 *
 	 * @since  1.0.0
 	 */
 	private static $props = array(
-		'key'        => 'my_options',
-		'title'      => 'My Options',
-		'topmenu'    => '',
-		'postslug'   => '',
-		'menuargs'   => array(),
-		'jsuri'      => '',
-		'boxes'      => array(),
-		'tabs'       => array(),
-		'cols'		 => 1,
-		'savetxt'    => 'Save',
+		'key'        => 'my_options',              // WP options slug
+		'title'      => 'My Options',              // Page title
+		'topmenu'    => '',                        // See 'parent_slug' in menuargs
+		'postslug'   => '',                        // Slug of a custom post type
+		'menuargs'   => array(
+			'parent_slug' => '',                   // Existing WP menu, blank for new top-level menu
+			'page_title'  => '',                   // Will be set from "title" if blank
+			'menu_title'  => '',                   // WP menu title
+			'capability'  => 'manage_options',     // Admin capability needed to access options page
+			'menu_slug'   => '',                   // Menu slug
+			'icon_url'    => '',                   // URL of WP admin icon
+			'position'    => null,                 // Integer required, null places at bottom of admin menu
+		),
+		'jsuri'      => '',                        // Location of JS if not in same directory as this class
+		'boxes'      => array(),                   // Array of CMB2 metaboxes
+		'tabs'       => array(),                   // Array of tab config arrays
+		'cols'		 => 1,                         // Allows use of sidebar
+		'savetxt'    => 'Save',                    // Text on the save button, blank removes button
 	);
 
 	/**
@@ -46,6 +59,7 @@ class Cmb2_Metatabs_Options {
 	 * @param array $args    Array of arguments
 	 * @throws \Exception
 	 *
+	 * @since  1.0.2 recurse the menuargs array with internal function instead of wp_parse_args()
 	 * @since  1.0.0
 	 */
 	public function __construct( $args ) {
@@ -55,7 +69,7 @@ class Cmb2_Metatabs_Options {
 			throw new Exception( 'CMB2_Metatabs_Options: CMB2 is required to use this class.' );
 
 		// parse any injected arguments and add to self::$props
-		self::$props = wp_parse_args( $args, self::$props );
+		self::$props = self::parse_args_r( $args, self::$props );
 
 		// validate the properties we were sent
 		$this->validate_props();
@@ -68,11 +82,39 @@ class Cmb2_Metatabs_Options {
 	}
 
 	/**
+	 * PARSE ARGUMENTS RECURSIVELY
+	 * Allows us to merge multidimensional properties
+	 *
+	 * Thanks: https://gist.github.com/boonebgorges/5510970
+	 *
+	 * @param $a
+	 * @param $b
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.2
+	 */
+	public static function parse_args_r( &$a, $b ) {
+		$a = (array) $a;
+		$b = (array) $b;
+		$r = $b;
+		foreach ( $a as $k => &$v ) {
+			if ( is_array( $v ) && isset( $r[ $k ] ) ) {
+				$r[ $k ] = self::parse_args_r( $v, $r[ $k ] );
+			} else {
+				$r[ $k ] = $v;
+			}
+		}
+		return $r;
+	}
+
+	/**
 	 * VALIDATE PROPS
 	 * Checks the values of critical passed properties
 	 *
 	 * @throws \Exception
 	 *
+	 * @since 1.0.2 Removed validation of menu args. Sending a plain array will no longer work!
 	 * @since 1.0.1 Moved menuargs validation to within this method
 	 * @since 1.0.0
 	 */
@@ -81,14 +123,6 @@ class Cmb2_Metatabs_Options {
 		// if key or title do not exist, throw exception
 		if ( ! self::$props['key'] || ! self::$props['title']  )
 			throw new Exception( 'CMB2_Metatabs_Options: Settings key or page title missing.' );
-
-		// check menu argument count
-		if ( ! empty( self::$props['menuargs'] ) ) {
-			$count = count( self::$props['menuargs'] );
-			// if the menu arguments number less than 6, throw exception
-			if ( $count < 6 || $count > 7 )
-				throw new Exception( 'CMB2 Multibox Options: Wrong number of menu arguments.' );
-		}
 
 		// set JS url
 		if ( ! self::$props['jsuri'] )
@@ -135,18 +169,16 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * ADD OPTIONS PAGE
 	 *
+	 * @since 1.0.2 Moved the callback determination to build_menu_args()
 	 * @since 1.0.0
 	 */
 	public function add_options_page() {
-
-		// set which WP function will be called based on the value of 'topmenu'
-		$callback = self::$props['topmenu'] ? 'add_submenu_page' : 'add_menu_page';
 
 		// build arguments
 		$args = $this->build_menu_args();
 
 		// this is kind of ugly, but so is the WP function!
-		self::$options_page = $callback( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6] );
+		self::$options_page = $args['cb']( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6] );
 
 		// Include CMB CSS in the head to avoid FOUC, called here as we need the screen ID
 		add_action( 'admin_print_styles-' . self::$options_page , array( 'CMB2_hookup', 'enqueue_cmb_css' ) );
@@ -162,39 +194,70 @@ class Cmb2_Metatabs_Options {
 	 * BUILD MENU ARGS
 	 * Builds the arguments needed to add options page to admin menu if they are not injected.
 	 *
-	 * Create top level menu when self::$props['topmenu'] = '' otherwise create submenu. You can pass null
-	 * to create a page without a menu entry, but you will need to link to it somewhere.
+	 * Including either self::$props['topmenu'] or self::$props['menuargs']['parent_slug'] will trigger the creation
+	 * of a submenu, otherwise a new top menu will be added.
 	 *
 	 * @return array
-	 * @throws \Exception
 	 *
+	 * @since 1.0.2 Removed counting of menu arguments, function now uses menuargs keys
 	 * @since 1.0.1 Removed menuargs validation to validate_props() method
 	 * @since 1.0.0
 	 */
 	private function build_menu_args() {
 
-		// if a menu arguments array was injected, return it
-		if ( ! empty( self::$props['menuargs'] ) ) {
-			// if menu arguments are less than 7, add empty argument to end, assumes subpage wanted
-			if ( count( self::$props['menuargs'] ) < 7 && self::$props['topmenu'] )
-				self::$props['menuargs'][] = null;
-			return self::$props['menuargs'];
+		$args = array();
+
+		// set the top menu if either topmenu or the menuargs parent_slug is set
+		$parent = self::$props['topmenu'] ? self::$props['topmenu'] : '';
+		$parent = self::$props['menuargs']['parent_slug'] ?
+			self::$props['menuargs']['parent_slug'] : $parent;
+
+		// set the page title; overrides 'title' with menuargs 'page_title' if set
+		$pagetitle = self::$props['menuargs']['page_title'] ?
+			self::$props['menuargs']['page_title'] : self::$props['title'];
+
+		// sub[0] : parent slug
+		if ( $parent ) {
+			// add a post_type get variable, to allow post options pages, if set
+			$add = self::$props['postslug'] ? '?post_type=' . self::$props['postslug'] : '';
+			$args[] = $parent . $add;
 		}
 
-		// otherwise build the menu page from the page title and options-slug
-		$args = array();
-		if ( self::$props['topmenu'] ) {
-			// add a post_type get var, to allow post options pages
-			$add = self::$props['postslug'] ? '?post_type=' . self::$props['postslug'] : '';
-			$args[] = self::$props['topmenu'] . $add;
-		}
-		$args[] = $args[] = self::$props['title'];
-		$args[] = 'manage_options';
-		$args[] = self::$props['key'];
+		// top[0], sub[1] : page title
+		$args[] = $pagetitle;
+
+		// top[1], sub[2] : menu title, defaults to page title if not set
+		$args[] = self::$props['menuargs']['menu_title'] ?
+			self::$props['menuargs']['menu_title'] : $pagetitle;
+
+		// top[2], sub[3] : capability
+		$args[] = self::$props['menuargs']['capability'];
+
+		// top[3], sub[4] : menu_slug, defaults to options slug if not set
+		$args[] = self::$props['menuargs']['menu_slug'] ?
+			self::$props['menuargs']['menu_slug'] : self::$props['key'];
+
+		// top[4], sub[5] : callable function
 		$args[] = array( $this, 'admin_page_display' );
-		if ( ! self::$props['topmenu'] )
-			$args[] = '';
-		$args[] = null;
+
+		// top menu icon and menu position
+		if ( ! $parent ) {
+
+			// top[5] icon url
+			$args[] = self::$props['menuargs']['icon_url'] ?
+				self::$props['menuargs']['icon_url'] : '';
+
+			// top[6] menu position
+			$args[] = intval( self::$props['menuargs']['position'] );
+		}
+
+		// sub[6] : unused, but returns consistent array
+		else {
+			$args[] = null;
+		}
+
+		// set which WP function will be called based on $parent
+		$args['cb'] = $parent ? 'add_submenu_page' : 'add_menu_page';
 
 		return $args;
 	}
@@ -202,7 +265,7 @@ class Cmb2_Metatabs_Options {
 	/**
 	 * ADD SCRIPTS
 	 * Add WP's metabox script, either by itself or as dependency of the tabs script. Added only to this options page.
-	 * If you role your own script, note the localized values being passed here.
+	 * If you roll your own script, note the localized values being passed here.
 	 *
 	 * @param string $hook_suffix
 	 * @throws \Exception
