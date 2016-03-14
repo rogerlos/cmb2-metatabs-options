@@ -60,6 +60,10 @@ None.
 
 # Changelog
 
+= 1.0.2 =
+* Revised the menu building method and injected properties to be clearer and more dependable -- thanks ajuliano
+* Added multidimensional argument parsing method
+
 = 1.0.1 =
 * code refactoring and comment revisions
 
