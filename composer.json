@@ -10,6 +10,7 @@
     "require": {
         "webdevstudios/cmb2": "^2.1"
     },
+    "type": "wordpress-muplugin",
     "autoload": {
         "psr-4": {
             "Cmb2_Metatabs_Options\\": "code/"
