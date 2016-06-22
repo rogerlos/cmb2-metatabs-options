@@ -476,7 +476,7 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @since 1.0.1
 	 */
-	private function should_save( $cmb ) {
+	private static function should_save( $cmb ) {
 		// was this flagged to save fields?
 		if ( ! $cmb->prop( 'save_fields' ) )
 			return false;
