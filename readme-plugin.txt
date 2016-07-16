@@ -51,6 +51,10 @@ None.
 
 == Changelog ==
 
+= 1.0.3 =
+* Added composer.json -- thanks misfist
+* Changed should_save() method to static -- thanks chrisgherbert
+
 = 1.0.2 =
 * Revised the menu building method and injected properties to be clearer and more dependable -- thanks ajuliano
 * Added multidimensional argument parsing method

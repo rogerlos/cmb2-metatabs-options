@@ -29,6 +29,7 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @var array
 	 *
+	 * @since  1.0.2 turned menuargs into array to match WP functions
 	 * @since  1.0.0
 	 */
 	private static $props = array(
@@ -474,9 +475,10 @@ class Cmb2_Metatabs_Options {
 	 * @param \CMB2 $cmb
 	 * @return bool
 	 *
+	 * @since 1.0.3 made static method
 	 * @since 1.0.1
 	 */
-	private function should_save( $cmb ) {
+	private static function should_save( $cmb ) {
 		// was this flagged to save fields?
 		if ( ! $cmb->prop( 'save_fields' ) )
 			return false;

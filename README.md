@@ -10,7 +10,7 @@ Requires at least: 3.8.0
 
 Tested up to: 4.4.1
 
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 License: GPLv2 or later
 
@@ -59,6 +59,10 @@ Nothing to see.
 None.
 
 # Changelog
+
+= 1.0.3 =
+* Added composer.json -- thanks misfist 
+* Changed should_save() method to static -- thanks chrisgherbert
 
 = 1.0.2 =
 * Revised the menu building method and injected properties to be clearer and more dependable -- thanks ajuliano
