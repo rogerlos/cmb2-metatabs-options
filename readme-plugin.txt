@@ -51,6 +51,19 @@ None.
 
 == Changelog ==
 
+= 1.1.0 =
+* Oops: Class now works when adding multiple options pages
+* New: add options page(s) to multisite network menus
+* New: argument parameters to turn off calls to CMB2_Box::get_all() and make registering the option optional
+* New: page load actions can now be passed into the contructor
+* Improved: 'boxes' array may now contain either/mixed CMB2 box objects / CMB2 box ids
+* Improved: Less reliance on options key to trigger internal events
+* Improved: Tighter checks for when to load plugin JS and CSS
+* Improved: before and after filters now pass page id as second argument (useful for multiple pages)
+* Bug fix: Submenu page added with same slug as parent works as WP gods intended
+* Bug fix: Wrong parameter passed to localized JS fixed
+* Note: Extensive use of closures requires PHP >= 5.3
+
 = 1.0.3 =
 * Added composer.json -- thanks misfist
 * Changed should_save() method to static -- thanks chrisgherbert

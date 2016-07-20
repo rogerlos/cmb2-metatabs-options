@@ -3,7 +3,8 @@
   "description": "Extends CMB2 to allow WordPress options pages with multiple metaboxes and optional tabs.",
   "type": "wordpress-plugin",
   "require": {
-    "webdevstudios/cmb2": "^2.2"
+    "webdevstudios/cmb2": "^2.2",
+    "php": ">=5.3"
   },
   "license": "GPLv2",
   "authors": [
