@@ -97,7 +97,6 @@ class Cmb2_Metatabs_Options {
 	 */
 	private $defaults = array(
 		'key'               => 'my_options',
-		//	'id'                => 'cmo',
 		'regkey'            => true,
 		'title'             => 'My Options',
 		'topmenu'           => '',
@@ -303,6 +302,9 @@ class Cmb2_Metatabs_Options {
 			
 			// skip if no action or callback
 			if ( ! isset( $load['action'] ) || ! isset( $load['callback'] ) ) continue;
+			
+			// skip if the [hook] token is not in the [action]
+			if ( strpos( $load['action'], '-[hook]') === false ) continue;
 			
 			// replace token with page hook
 			$load['action'] = str_replace( '[hook]', self::$props[ $id ]['hook'], $load['action'] );
