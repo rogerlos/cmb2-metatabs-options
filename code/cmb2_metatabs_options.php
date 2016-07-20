@@ -90,7 +90,7 @@ class Cmb2_Metatabs_Options {
 	
 	/**
 	 * Properties which can be injected via constructor, a subset of self::$props
-	 
+	 *
 	 * @var array $defaults  ( See above )
 	 *
 	 * @since 1.1.0 moved from self::$props to prevent problems with multiple options pages
