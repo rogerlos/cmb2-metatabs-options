@@ -3,8 +3,8 @@ Contributors: rogerlos
 Donate link: http://rogerlos.com
 Tags: cmb2, metaboxes, forms, fields, options, settings, tabs, cmo
 Requires at least: 3.8.0
-Tested up to: 4.4.1
-Stable tag: 1.1.0
+Tested up to: 4.5.3
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,15 +41,16 @@ in the main plugin file which reads "include 'example.php';".
 
 See the [wiki](https://github.com/rogerlos/cmb2-metatabs-options/wiki/Troubleshooting) troubleshooting page.
 
-== Screenshots ==
-
-Nothing to see.
-
 == Upgrade Notice ==
 
 None.
 
 == Changelog ==
+
+= 1.1.1 =
+* Added 'admincss' parameter to turn off (false) or inject your own css (string) into admin page
+* Added 'class' to allow class(es) to be added to the WordPress admin page wrapper
+* Code cleanup to WordPress standards
 
 = 1.1.0 =
 * Oops: Class now works when adding multiple options pages
