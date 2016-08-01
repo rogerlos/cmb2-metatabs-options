@@ -121,7 +121,7 @@ class Cmb2_Metatabs_Options {
 		'jsuri'    => '',
 		'boxes'    => array(),
 		'getboxes' => TRUE,
-		'admincss' => TRUE,
+		'admincss' => '',
 		'tabs'     => array(),
 		'cols'     => 1,
 		'savetxt'  => 'Save',
