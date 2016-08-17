@@ -6,9 +6,9 @@ Tags: cmb2, metaboxes, forms, fields, options, settings, tabs, cmo
 
 Requires at least: 3.8.0
 
-Tested up to: 4.5.3
+Tested up to: 4.6
 
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 License: GPLv2 or later
 
@@ -44,13 +44,16 @@ Note this plugin does nothing by default other than give you access to the Cmb2_
 You can see an example of what this plugin does by using the WP plugin editor and uncommenting the line
 in the main plugin file which reads "include 'example.php';".
 
-# Installation (as WP plugin)
+# Installation (as stand-alone class)
 
 Copy the files within the code directory to your project and include the class file in your code. If you
 change the location of the JS file, you must inject 'jsuri' with its new URL into the class when creating 
 an options page.
 
 # Changelog
+
+= 1.1.2 =
+* Changed way empty string was passed in before- and after-form filters, now supports cumulative filtering
 
 = 1.1.1 =
 * Added 'admincss' parameter to turn off (false) or inject your own css (string) into admin page

@@ -3,8 +3,8 @@ Contributors: rogerlos
 Donate link: http://rogerlos.com
 Tags: cmb2, metaboxes, forms, fields, options, settings, tabs, cmo
 Requires at least: 3.8.0
-Tested up to: 4.5.3
-Stable tag: 1.1.1
+Tested up to: 4.6
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ See the [wiki](https://github.com/rogerlos/cmb2-metatabs-options/wiki/Troublesho
 None.
 
 == Changelog ==
+
+= 1.1.2 =
+* Changed way empty string was passed in before- and after-form filters, now supports cumulative filtering
 
 = 1.1.1 =
 * Added 'admincss' parameter to turn off (false) or inject your own css (string) into admin page

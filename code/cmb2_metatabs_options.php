@@ -5,6 +5,7 @@
  *
  * General Notes
  *
+ * @since 1.1.2 Changed way empty string initially passed into filters
  * @since 1.1.1 Now in "WordPress" code style
  * @since 1.1.0 Discovered class did NOT handle multiple options pages; fixed by:
  *              - self::$props now keyed with random ID assigned on each __construct call
@@ -211,7 +212,6 @@ class Cmb2_Metatabs_Options {
 				$r[ $k ] = $v;
 			}
 		}
-		
 		return $r;
 	}
 	
@@ -281,7 +281,8 @@ class Cmb2_Metatabs_Options {
 			function () use ( $id ) {
 				$this->add_options_page( $id );
 			},
-			12 );
+			12
+		);
 		
 		// Include CSS for this options page as style tag in head, if tabs are configured
 		add_action(
@@ -687,7 +688,6 @@ class Cmb2_Metatabs_Options {
 	 */
 	public function hide_metabox_class( $classes ) {
 		$classes[] = 'opt-hidden';
-		
 		return $classes;
 	}
 	
@@ -702,7 +702,6 @@ class Cmb2_Metatabs_Options {
 	 */
 	public function close_metabox_class( $classes ) {
 		$classes[] = 'closed';
-		
 		return $classes;
 	}
 	
@@ -819,6 +818,7 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @return string
 	 *
+	 * @since 1.1.2 Instead of passing empty string directly in filter call, set it to var; allows cumulative filters
 	 * @since 1.1.1  added ability to inject extra wrapper class(es)
 	 * @since 1.1.0
 	 */
@@ -826,6 +826,7 @@ class Cmb2_Metatabs_Options {
 		
 		// standard classes, includes page id
 		$classes = 'wrap cmb2-options-page cmo-options-page ' . self::$props[ $id ]['page'];
+		$filterable = '';
 		
 		// add any extra configured classes
 		if ( ! empty( self::$props[ $id ]['class'] ) ) {
@@ -837,7 +838,7 @@ class Cmb2_Metatabs_Options {
 		$ret .= '<div class="cmo-before-form">';
 		
 		// note this now passes the page slug as a second argument
-		$ret .= apply_filters( 'cmb2metatabs_before_form', '', self::$props[ $id ]['page'] );
+		$ret .= apply_filters( 'cmb2metatabs_before_form', $filterable, self::$props[ $id ]['page'] );
 		
 		$ret .= '</div>';
 		
@@ -851,14 +852,17 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @return string
 	 *
+	 * @since 1.1.2 Instead of passing empty string directly in filter call, set it to var; allows cumulative filters
 	 * @since 1.1.0
 	 */
 	private function admin_page_bottom( $id ) {
 		
+		$filterable = '';
+		
 		$ret = '<div class="cmo-after-form">';
 		
 		// note this now passes the page slug as a second argument
-		$ret .= apply_filters( 'cmb2metatabs_after_form', '', self::$props[ $id ]['page'] );
+		$ret .= apply_filters( 'cmb2metatabs_after_form', $filterable, self::$props[ $id ]['page'] );
 		
 		$ret .= '</div>';
 		$ret .= '</div>';
@@ -1068,7 +1072,6 @@ class Cmb2_Metatabs_Options {
 	 */
 	private function add_tabs( $id ) {
 		$tabs = self::$props[ $id ]['tabs'];
-		
 		return $tabs;
 	}
 }
