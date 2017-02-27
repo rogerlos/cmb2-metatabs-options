@@ -47,6 +47,12 @@ None.
 
 == Changelog ==
 
+= 1.2 =
+* Added test to see if autoloader has already been loaded. Thanks @rubengc
+* Added menu argument 'view_capability' to set page viewing capability. Idea: @Julianoe
+* Added argument 'plugincss': disables plugin css, still allows custom CSS via 'admincss'. Idea: @jquimera
+* Added wp box nonces to options page form. Bug report:  @Jekyll4k, @Kaleidosko
+
 = 1.1.2 =
 * Changed way empty string was passed in before- and after-form filters, now supports cumulative filtering
 
