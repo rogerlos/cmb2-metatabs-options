@@ -6,9 +6,9 @@ Tags: cmb2, metaboxes, forms, fields, options, settings, tabs, cmo
 
 Requires at least: 3.8.0
 
-Tested up to: 4.6
+Tested up to: 4.7.2
 
-Stable tag: 1.1.2
+Stable tag: 1.2
 
 License: GPLv2 or later
 
