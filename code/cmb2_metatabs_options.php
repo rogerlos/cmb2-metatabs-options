@@ -589,9 +589,9 @@ class Cmb2_Metatabs_Options {
 		// add css to clean up tab styles in admin when used in a postbox
 		if ( self::$props[ $id ]['plugincss'] === TRUE ) {
 			$css .= '<style type="text/css" id="CMO-cleanup-css">';
-			$css .= '#poststuff h2.nav-tab-wrapper{padding-bottom:0;margin-bottom: 20px;}';
-			$css .= '.opt-hidden{display:none;}';
-			$css .= '#side-sortables{padding-top:22px;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page #poststuff h2.nav-tab-wrapper{padding-bottom:0;margin-bottom: 20px;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page .opt-hidden{display:none;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page #side-sortables{padding-top:22px;}';
 			$css .= '</style>';
 		}
 		
