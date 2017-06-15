@@ -3,7 +3,7 @@
 Plugin Name: CMB2 Metatabs Options
 Plugin URI:  https://github.com/rogerlos/cmb2-metatabs-options
 Description: Add admin option pages with multiple metaboxes--and place those metaboxes into optional tabs. Requires CMB2.
-Version:     1.2
+Version:     1.3
 Author:      Roger Los
 Author URI:  https://github.com/rogerlos
 Text Domain: cmb2
