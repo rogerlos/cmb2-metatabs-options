@@ -47,6 +47,7 @@ class Cmb2_Metatabs_Options {
 	 *    ['topmenu']             string       See ['menuargs']['parent_slug']    Y      @since 1.0.0
 	 *    ['postslug']            string       Option page to post menu           Y      @since 1.0.0
 	 *    ['jsuri']               string       JS file for tab handling           Y      @since 1.0.0
+	 *    ['resettxt']            string       reset text, empty removes button   Y      @since 1.0.0
 	 *    ['savetxt']             string       Save text, empty removes button    Y      @since 1.0.0
 	 *    ['class']               string       Class(es) added to wrapper         Y      @since 1.1.1
 	 *    ['cols']                int          Columns; 1 or 2                    Y      @since 1.0.0
@@ -132,6 +133,7 @@ class Cmb2_Metatabs_Options {
 		'admincss'  => '',
 		'tabs'      => array(),
 		'cols'      => 1,
+		'resettxt'  => 'Reset',
 		'savetxt'   => 'Save',
 		'load'      => array(),
 	);
@@ -589,9 +591,9 @@ class Cmb2_Metatabs_Options {
 		// add css to clean up tab styles in admin when used in a postbox
 		if ( self::$props[ $id ]['plugincss'] === TRUE ) {
 			$css .= '<style type="text/css" id="CMO-cleanup-css">';
-			$css .= '#poststuff h2.nav-tab-wrapper{padding-bottom:0;margin-bottom: 20px;}';
-			$css .= '.opt-hidden{display:none;}';
-			$css .= '#side-sortables{padding-top:22px;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page #poststuff h2.nav-tab-wrapper{padding-bottom:0;margin-bottom: 20px;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page .opt-hidden{display:none;}';
+			$css .= '.' . self::$props[ $id ]['page'] . '.cmb2-options-page #side-sortables{padding-top:22px;}';
 			$css .= '</style>';
 		}
 		
@@ -750,14 +752,49 @@ class Cmb2_Metatabs_Options {
 		
 		// get the metabox, fishing the ID out of the arguments array
 		$cmb = cmb2_get_metabox( $args[1]['id'], self::$props[ $id ]['key'] );
-		
-		// save fields
+
 		if ( $this->should_save( $cmb, $id ) ) {
+			// save fields
 			$cmb->save_fields( self::$props[ $id ]['key'], $cmb->mb_object_type(), $_POST );
+		} else if( $this->should_reset( $cmb, $id ) ) {
+			// Reset fields
+			delete_option( self::$props[ $id ]['key'] );
 		}
 		
 		// show the fields
 		$cmb->show_form();
+	}
+
+	/**
+	 * Determine whether the CMB2 object should be reset. All tests must be true, hence return false for
+	 * any failure.
+	 *
+	 * @param string $id @since 1.1.0
+	 * @param \CMB2 $cmb
+	 *
+	 * @return bool
+	 *
+	 * @since 1.1.0 static unclung
+	 * @since 1.0.3 made static method
+	 * @since 1.0.1
+	 */
+	private function should_reset( $cmb, $id ) {
+		// are these values set?
+		if ( ! isset( $_POST['reset-cmb'], $_POST['object_id'], $_POST[ $cmb->nonce() ] ) ) {
+			return FALSE;
+		}
+
+		// does the nonce match?
+		if ( ! wp_verify_nonce( $_POST[ $cmb->nonce() ], $cmb->nonce() ) ) {
+			return FALSE;
+		}
+
+		// does the object_id equal the settings key?
+		if ( ! $_POST['object_id'] == self::$props[ $id ]['key'] ) {
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 	
 	/**
@@ -774,12 +811,12 @@ class Cmb2_Metatabs_Options {
 	 * @since 1.0.1
 	 */
 	private function should_save( $cmb, $id ) {
-		
+
 		// was this flagged to save fields?
 		if ( ! $cmb->prop( 'save_fields' ) ) {
 			return FALSE;
 		}
-		
+
 		// are these values set?
 		if ( ! isset( $_POST['submit-cmb'], $_POST['object_id'], $_POST[ $cmb->nonce() ] ) ) {
 			return FALSE;
@@ -962,9 +999,10 @@ class Cmb2_Metatabs_Options {
 		
 		$ret .= '</div></div></div>';
 		
-		// add submit button if savetxt was included
-		if ( self::$props[ $id ]['savetxt'] ) {
+		// add submit button if resettxt or savetxt was included
+		if ( self::$props[ $id ]['resettxt'] || self::$props[ $id ]['savetxt'] ) {
 			$ret .= '<div style="clear:both;">';
+			$ret .= $this->render_reset_button( self::$props[ $id ]['resettxt'] );
 			$ret .= $this->render_save_button( self::$props[ $id ]['savetxt'] );
 			$ret .= '</div>';
 		}
@@ -972,6 +1010,19 @@ class Cmb2_Metatabs_Options {
 		$ret .= '</form>';
 		
 		return $ret;
+	}
+
+	/**
+	 * Renders reset button
+	 *
+	 * @param string $text
+	 *
+	 * @since 1.1.0 CMB2 now invokes this from closure which already fished out the text string
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function render_reset_button( $text = '' ) {
+		return $text ? '<input type="submit" name="reset-cmb" value="' . $text . '" class="button">' : '';
 	}
 	
 	/**
