@@ -1039,8 +1039,7 @@ class Cmb2_Metatabs_Options {
 	 *
 	 * @param string $text
 	 *
-	 * @since 1.1.0 CMB2 now invokes this from closure which already fished out the text string
-	 * @since 1.0.0
+	 * @since 1.3
 	 * @return string
 	 */
 	public function render_reset_button( $text = '' ) {
