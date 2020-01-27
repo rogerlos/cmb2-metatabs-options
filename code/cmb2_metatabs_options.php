@@ -3,6 +3,15 @@
 /**
  * See https://github.com/rogerlos/cmb2-metatabs-options
  *
+ * GamiPress Team updates:
+ *
+ * Support to CMB2 2.7.0 by renaming CMB2_hookup instances to CMB2_Hookup
+ * Support for PHP 5.6:
+ * - Moved auto-generated id into a object var
+ * - Removed all usages of [] to instantiate arrays
+ * - Moved all direct callbacks into a reference calls
+ * On multisite installs, fixed undefined 'hook' index
+ *
  * General Notes
  *
  * @since 1.3   Adds reset options button, thanks @rubengc https://github.com/rubengc
@@ -398,7 +407,7 @@ class Cmb2_Metatabs_Options {
 		// Include CMB CSS in the head to avoid FOUC, called here as we need the screen ID
 		add_action(
 			'admin_print_styles-' . self::$props[ $this->id ]['hook'],
-			array( 'CMB2_hookup', 'enqueue_cmb_css' )
+			array( 'CMB2_Hookup', 'enqueue_cmb_css' )
 		);
 		
 		// Adds existing metaboxes, see note in function, called here as we need the screen ID
@@ -505,6 +514,10 @@ class Cmb2_Metatabs_Options {
 	public function add_scripts() {
 		
 		global $hook_suffix;
+
+		if( ! isset( self::$props[ $this->id ]['hook'] ) ) {
+			return;
+		}
 		
 		// do not run if not a CMO page
 		if ( $hook_suffix !== self::$props[ $this->id ]['hook'] ) {
