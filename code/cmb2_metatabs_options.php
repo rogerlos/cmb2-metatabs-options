@@ -26,6 +26,8 @@
  *
  * You must add your page before admin_init, as that action is referenced within this class.
  */
+if ( ! class_exists( 'PW_CMB2_Field_Select2', false ) ) {
+
 class Cmb2_Metatabs_Options {
 	
 	/**
@@ -1183,4 +1185,5 @@ class Cmb2_Metatabs_Options {
 		
 		return $tabs;
 	}
+}
 }
